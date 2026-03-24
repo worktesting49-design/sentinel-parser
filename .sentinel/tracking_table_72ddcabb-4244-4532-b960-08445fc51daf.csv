@@ -1,4 +1,5 @@
 FileName, CommitSha
 Parsers/thirs parser/22azuredeploy.json,dd41867682477f6afcc83d4bb22486226ead3580
 Parsers/AADUserInfo/azuredeploy.json,42ab51814ecf1770442c86ec51dad0774fe4c75f
+Parsers/Crowdstrike_TESTdevices.JSON,216a3a8a8e345445b9261fe9b1f1477e2260d5c5
 
