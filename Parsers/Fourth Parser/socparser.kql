@@ -1,0 +1,7 @@
+let FailedSignInParser = () {
+SigninLogs
+| where ResultType != 0
+| summarize FailedAttempts=count() by UserPrincipalName, IPAddress
+| project UserPrincipalName, IPAddress, FailedAttempts
+};
+FailedSignInParser
