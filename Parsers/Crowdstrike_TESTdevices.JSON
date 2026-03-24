@@ -1,0 +1,101 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspaceName": {
+      "type": "string",
+      "defaultValue": "sentineldnd",
+      "metadata": {
+        "description": "Name of the Log Analytics workspace (Sentinel workspace)."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "centralindia",
+      "metadata": {
+        "description": "Azure region of the Log Analytics workspace (example: centralindia)."
+      }
+    },
+    "ParserFunctionAlias": {
+      "type": "string",
+      "defaultValue": "Crowdstrike_TESTdevices",
+      "metadata": {
+        "description": "Parser function name (alias) that will be created in Logs > Functions."
+      }
+    },
+    "ParserCode": {
+      "type": "string",
+      "defaultValue": "[variables('query')]",
+      "metadata": {
+        "description": "The KQL parser code (function body) to deploy."
+      }
+    },
+
+    /* Keeping your original parameters (optional), but not used by Sentinel Repos parser engine */
+    "savedSearchName": {
+      "type": "string",
+      "defaultValue": "Crowdstrike_TESTdevices",
+      "metadata": {
+        "description": "Saved search name (kept for compatibility/readability)."
+      }
+    },
+    "displayName": {
+      "type": "string",
+      "defaultValue": "Crowdstrike_TESTdevices",
+      "metadata": {
+        "description": "Display name shown in Logs > Functions."
+      }
+    },
+    "category": {
+      "type": "string",
+      "defaultValue": "Parsers",
+      "metadata": {
+        "description": "Category/folder grouping for the function."
+      }
+    },
+    "functionAlias": {
+      "type": "string",
+      "defaultValue": "Crowdstrike_TESTdevices",
+      "metadata": {
+        "description": "Function alias used in KQL."
+      }
+    }
+  },
+  "variables": {
+    "query": "fdr_CrowdStrike_Secondary_Data_CL\n| extend AF = todynamic(AdditionalFields)\n| extend\n    EventTime                     = todatetime(AF['_time']),\n    EventId                       = tostring(AF['id']),\n    EventSimpleName               = tostring(AF['event_simpleName']),\n    EventPlatform                 = tostring(AF['event_platform']),\n    EventOrigin                   = tostring(AF['EventOrigin']),\n    EffectiveTransmissionClass    = tostring(AF['EffectiveTransmissionClass']),\n    ProcessName                   = tostring(AF['name']),\n    ComputerName                  = tostring(AF['ComputerName']),\n    ContextProcessId              = tostring(AF['ContextProcessId']),\n    ContextThreadId               = tostring(AF['ContextThreadId']),\n    ContextImageFileName          = tostring(AF['ContextImageFileName']),\n    TargetProcessId               = tostring(AF['TargetProcessId']),\n    ParentProcessId               = tostring(AF['ParentProcessId']),\n    GrandparentProcessId          = tostring(AF['GrandparentProcessId']),\n    CommandLine                   = tostring(AF['CommandLine']),\n    ImageFileName                 = tostring(AF['ImageFileName']),\n    ParentCommandLine             = tostring(AF['ParentCommandLine']),\n    ParentImageFileName           = tostring(AF['ParentImageFileName']),\n    GrandparentCommandLine        = tostring(AF['GrandparentCommandLine']),\n    GrandparentImageFileName      = tostring(AF['GrandparentImageFileName']),\n    TargetProcessCommandLine      = tostring(AF['TargetProcessCommandLine']),\n    TargetProcessImageFileName    = tostring(AF['TargetProcessImageFileName']),\n    SHA256Hash                    = tostring(AF['SHA256HashData']),\n    ParentSHA256Hash              = tostring(AF['ParentSHA256HashData']),\n    GrandParentSHA256Hash         = tostring(AF['GrandparentSHA256HashData']),\n    FileSize                      = tolong(AF['Size']),\n    ShannonEntropy                = todouble(AF['ShannonEntropy']),\n    FileEcpBitmask                = tostring(AF['FileEcpBitmask']),\n    TargetFileName                = tostring(AF['TargetFileName']),\n    VirtualAddress                = tolong(AF['VirtualAddress']),\n    LocalAddressIP4               = tostring(AF['LocalAddressIP4']),\n    CurrentLocalIP                = tostring(AF['CurrentLocalIP']),\n    Subnet                        = tostring(AF['subnet']),\n    LocalIPCount                  = toint(AF['localipCount']),\n    AIP                           = tostring(AF['aip']),\n    ConfigStateHash               = tostring(AF['ConfigStateHash']),\n    ConfigBuild                   = tostring(AF['ConfigBuild']),\n    Entitlements                  = tostring(AF['Entitlements']),\n    ForceTimestamp                = tostring(AF['ForceTimestamp']),\n    PatternId                     = tostring(AF['PatternId']),\n    PatternIdList                 = tostring(AF['PatternIdList']),\n    ParentProcessPatternIdList    = tostring(AF['ParentProcessPatternIdList']),\n    GrandparentProcessPatternIdList = tostring(AF['GrandparentProcessPatternIdList']),\n    TemplateInstanceId            = tostring(AF['TemplateInstanceId']),\n    TemplateDisposition           = tostring(AF['TemplateDisposition']),\n    ContextProcessTags            = tostring(AF['ContextProcessTagsAsString']),\n    Tactic                        = tostring(AF['Tactic']),\n    Technique                     = tostring(AF['Technique']),\n    OciContainerId                = tostring(AF['OciContainerId']),\n    IsLateContainerEvent          = tostring(AF['IsLateContainerEvent']),\n    BPFCmd                        = tostring(AF['BPFCmd']),\n    BPFProgType                   = tostring(AF['BPFProgType']),\n    BPFProgAttachBtfId            = tostring(AF['BPFProgAttachBtfId']),\n    BPFProgLicense                = tostring(AF['BPFProgLicense']),\n    BPFProgName                   = tostring(AF['BPFProgName']),\n    ModuleLoadStatus              = tostring(AF['ModuleLoadStatus']),\n    CertificateEid                = tostring(AF['eid']),\n    CertificateIssuerCN           = tostring(AF['IssuerCN']),\n    CertificateCustomerIdString   = tostring(AF['CustomerIdString']),\n    CertificateEventType          = tostring(AF['EventType']),\n    SubjectCertValidFrom          = todatetime(AF['SubjectCertValidFrom']),\n    SubjectCertValidTo            = todatetime(AF['SubjectCertValidTo']),\n    SubjectCN                     = tostring(AF['SubjectCN']),\n    SubjectDN                     = tostring(AF['SubjectDN']),\n    IssuerDN                      = tostring(AF['IssuerDN']),\n    SubjectSerialNumber           = tostring(AF['SubjectSerialNumber']),\n    SubjectCertThumbprint         = tostring(AF['SubjectCertThumbprint']),\n    SHA256CertHash                = tostring(AF['SHA256HashData']),\n    AuthenticodeHashData          = tostring(AF['AuthenticodeHashData']),\n    SubjectKeyIdentifier          = tostring(AF['SubjectKeyIdentifier']),\n    AuthorityKeyIdentifier        = tostring(AF['AuthorityKeyIdentifier']),\n    SignatureDigestAlg            = tostring(AF['SignatureDigestAlg']),\n    SignatureDigestEncryptAlg     = tostring(AF['SignatureDigestEncryptAlg']),\n    ExternalApiType               = tostring(AF['ExternalApiType']),\n    AgentIdString                 = tostring(AF['AgentIdString']),\n    CID                           = tostring(AF['cid']),\n    Nonce                         = tostring(AF['Nonce']),\n    SignInfoFlagHasValidSignature = iff(tostring(AF['SignInfoFlagHasValidSignature']) == \"true\", true, false),\n    SignInfoFlagInvalidSignChain  = iff(tostring(AF['SignInfoFlagInvalidSignChain']) == \"true\", true, false),\n    SignInfoFlagMicrosoftSigned   = iff(tostring(AF['SignInfoFlagMicrosoftSigned']) == \"true\", true, false),\n    SignInfoFlagEmbeddedSigned    = iff(tostring(AF['SignInfoFlagEmbeddedSigned']) == \"true\", true, false),\n    SignInfoFlagCatalogSigned     = iff(tostring(AF['SignInfoFlagCatalogSigned']) == \"true\", true, false),\n    SignInfoFlagThirdPartyRoot    = iff(tostring(AF['SignInfoFlagThirdPartyRoot']) == \"true\", true, false),\n    SignInfoFlagNoEmbeddedCert    = iff(tostring(AF['SignInfoFlagNoEmbeddedCert']) == \"true\", true, false),\n    RegObjectName                 = tostring(AF['RegObjectName']),\n    RegClassificationFlags        = tostring(AF['RegClassificationFlags']),\n    RegOperationType              = tostring(AF['RegOperationType']),\n    RegStringValue                = tostring(AF['RegStringValue']),\n    RegType                       = tostring(AF['RegType']),\n    RegClassificationIndex        = tostring(AF['RegClassificationIndex']),\n    RegValueName                  = tostring(AF['RegValueName']),\n    AuthenticationId              = tostring(AF['AuthenticationId']),\n    TokenType                     = tostring(AF['TokenType']),\n    RegBinaryValue                = tostring(AF['RegBinaryValue']),\n    AID                           = tostring(AF['aid'])\n"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+      "apiVersion": "2020-08-01",
+      "name": "[concat(parameters('workspaceName'), '/', parameters('ParserFunctionAlias'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "category": "[parameters('category')]",
+        "displayName": "[parameters('displayName')]",
+        "functionAlias": "[parameters('ParserFunctionAlias')]",
+        "query": "[parameters('ParserCode')]",
+        "version": 2,
+        "tags": [
+          { "name": "Title", "value": "Crowdstrike_Devices" },
+          { "name": "Purpose", "value": "Normalize CrowdStrike device inventory for analytics and reporting" },
+          { "name": "Scope", "value": "Covers device asset records from CrowdstrikeRawEvent; excludes detections/alerts" },
+          { "name": "Owner", "value": "RSA_Sentinel_Squad <rsa_sentinel_squad@msd.com>" },
+          { "name": "Version", "value": "v1.0.0" },
+          { "name": "Status", "value": "Approved" },
+          { "name": "CreatedOn", "value": "2026-02-10" },
+          { "name": "CreatedBy", "value": "Siva Pothana/Mihai" },
+          { "name": "LastUpdated", "value": "2026-02-10" },
+          { "name": "SourceTable", "value": "fdr_CrowdStrike_Secondary_Data_CL" },
+          { "name": "Tags", "value": "endpoint, inventory, crowdstrike, devices" }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "deployedFunctionAlias": {
+      "type": "string",
+      "value": "[parameters('ParserFunctionAlias')]"
+    }
+  }
+}
