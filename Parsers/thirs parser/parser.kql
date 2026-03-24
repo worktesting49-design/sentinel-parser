@@ -1,0 +1,13 @@
+let AADSignInParser = () {
+SigninLogs
+| summarize arg_max(TimeGenerated, *) by UserPrincipalName
+| project TimeGenerated,
+          UserPrincipalName,
+          AppDisplayName,
+          IPAddress,
+          Location,
+          ResultType,
+          ResultDescription,
+          ConditionalAccessStatus
+};
+AADSignInParser
