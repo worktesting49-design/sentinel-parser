@@ -1,29 +1,7 @@
-{
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "workspaceName": {
-      "type": "string",
+{| extend destinationUserName = extract(\"duser=(.*?)externalId=\", 1, SyslogMessage)\n| extend externalId = extract(\"externalId=(.*?)app=\", 1, SyslogMessage)\n| extend applicationProtocol = extract(\"app=(.*?)reason=\", 1, SyslogMessage)\n| extend Reason = extract(\"reason=(.*?)cs1Label=\", 1, SyslogMessage)\n| extend affectedUserName = extract(\"cs1=(.*?)cs2Label=\", 1, SyslogMessage)\n| extend safeName = extract(\"cs2=(.*?)cs3Label=\", 1, SyslogMessage)\n| extend deviceType = extract(\"cs3=(.*?)cs4Label=\", 1, SyslogMessage)\n| extend Database = extract(\"cs4=(.*?)cs5Label=\", 1, SyslogMessage)\n| extend otherInfo = extract(\"cs5=(.*?)cn1Label=\", 1, SyslogMessage)\n| extend requestID = extract(\"cn1=(.*?)cn2Label=\", 1, SyslogMessage)\n| extend ticketID = extract(\"cn2=(.*$)\", 1, SyslogMessage)\n| extend Message = extract(\"msg=(.*$)\", 1, SyslogMessage)\n| where ProcessID in (22,24,31,38,57,60,67,84,129,130,136,137,326,327,328,329,330,414,415,416,417,418,419,420,421,426,434,435)",
       "metadata": {
-        "description": "Name of the Log Analytics workspace (SentinelDND)."
+        "description": "KQL parser code to deploy as a workspace function."
       }
-    },
-    "location": {
-      "type": "string",
-      "metadata": {
-        "description": "Azure region of the Log Analytics workspace (example: centralindia)."
-      }
-    },
-    "ParserFunctionAlias": {
-      "type": "string",
-      "defaultValue": "CyberArk_CPM",
-      "metadata": {
-        "description": "Function alias used in KQL queries."
-      }
-    },
-    "ParserCode": {
-      "type": "string",
-      "defaultValue": "Syslog\n| where ProcessName contains \"Cyber-Ark\"\n| extend Time = EventTime\n| extend Source = Computer\n| extend MessageID = ProcessID\n| extend Vendor = ProcessName\n| extend deviceAction = extract(\"act=(.*?)suser=\", 1, SyslogMessage)\n| extend sourceUserName = extract(\"suser=(.*?)fname=\", 1, SyslogMessage)\n| extend fileName = extract(\"fname=(.*?)dvc=\", 1, SyslogMessage)\n| extend deviceAddress = extract(\"dvc=(.*?)shost=\", 1, SyslogMessage)\n| extend sourceHostName = extract(\"shost=(.*?)dhost=\", 1, SyslogMessage)\n| extend destinationHostName = extract(\"dhost=(.*?)duser=\", 1, SyslogMessage)\n| extend destinationUserName = extract(\"duser=(.*?)externalId=\", 1, SyslogMessage)\n| extend externalId = extract(\"externalId=(.*?)app=\", 1, SyslogMessage)\n| extend applicationProtocol = extract(\"app=(.*?)reason=\", 1, SyslogMessage)\n| extend Reason = extract(\"reason=(.*?)cs1Label=\", 1, SyslogMessage)\n| extend affectedUserName = extract(\"cs1=(.*?)cs2Label=\", 1, SyslogMessage)\n| extend safeName = extract(\"cs2=(.*?)cs3Label=\", 1, SyslogMessage)\n| extend deviceType = extract(\"cs3=(.*?)cs4Label=\", 1, SyslogMessage)\n| extend Database = extract(\"cs4=(.*?)cs5Label=\", 1, SyslogMessage)\n| extend otherInfo = extract(\"cs5=(.*?)cn1Label=\", 1, SyslogMessage)\n| extend requestID = extract(\"cn1=(.*?)cn2Label=\", 1, SyslogMessage)\n| extend ticketID = extract(\"cn2=(.*$)\", 1, SyslogMessage)\n| extend Message = extract(\"msg=(.*$)\", 1, SyslogMessage)\n| where ProcessID in (22,24,31,38,57,60,67,84,129,130,136,137,326,327,328,329,330,414,415,416,417,418,419,420,421,426,434,435)"
     }
   },
   "resources": [
@@ -39,18 +17,9 @@
         "query": "[parameters('ParserCode')]",
         "version": 2,
         "tags": [
-          {
-            "name": "Title",
-            "value": "CyberArk CPM Parser"
-          },
-          {
-            "name": "Purpose",
-            "value": "Parses CyberArk Digital Vault Syslog messages for CPM actions"
-          },
-          {
-            "name": "Source",
-            "value": "Syslog"
-          }
+          { "name": "Title", "value": "CyberArk CPM Parser" },
+          { "name": "Purpose", "value": "Parses CyberArk Digital Vault Syslog messages for CPM actions" },
+          { "name": "Source", "value": "Syslog" }
         ]
       }
     }
@@ -63,3 +32,29 @@
   }
 }
 ``
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspaceName": {
+      "type": "string",
+      "defaultValue": "sentineldnd",
+      "metadata": {
+        "description": "Name of the Log Analytics workspace (SentinelDND)."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "centralindia",
+      "metadata": {
+        "description": "Azure region of the Log Analytics workspace (example: centralindia)."
+      }
+    },
+    "ParserFunctionAlias": {
+      "type": "string",
+      "defaultValue": "CyberArk_CPM",
+      "metadata": {
+        "description": "Function alias used in KQL queries."
+      }
+    },
+    "ParserCode": {
+      "type": "string",
