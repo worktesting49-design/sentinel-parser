@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+      "apiVersion": "2022-10-01",
+      "name": "[concat(parameters('workspace'), '/Crowdstrike_devices')]",
+      "properties": {
+        "displayName": "Crowdstrike_devices",
+        "category": "Parsers",
+        "functionAlias": "Crowdstrike_devices",
+        "query": "fdr_CrowdStrike_Secondary_Data_CL | extend AF = todynamic(AdditionalFields) | extend EventTime = todatetime(AF['_time']), EventId = tostring(AF['id']), EventSimpleName = tostring(AF['event_simpleName'])",
+        "version": 1
+      }
+    }
+  ]
+}
