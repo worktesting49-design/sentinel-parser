@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+      "apiVersion": "2021-06-01",
+      "name": "[concat('SentinelDND', '/DeletedResourcesActivity')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "category": "Parsers",
+        "displayName": "DeletedResourcesActivity",
+        "query": "AzureActivity\n| where OperationNameValue contains \"create\" \n| where ActivityStatusValue == \"Success\"\n| extend Temp = split(_ResourceId, \"/\")\n| extend Deleted_Resource = Temp[-1]\n| extend Deleted_ResourceType = Temp[-2]\n| project TimeGenerated, Caller, CallerIpAddress, Deleted_Resource, Deleted_ResourceType, ResourceGroup, _ResourceId, OperationNameValue\n| order by TimeGenerated desc",
+        "functionAlias": "DeletedResourcesActivity"
+      }
+    }
+  ]
+}
