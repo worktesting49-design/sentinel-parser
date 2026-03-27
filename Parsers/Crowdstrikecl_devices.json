@@ -1,0 +1,16 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+      "apiVersion": "2022-10-01",
+      "name": "[concat('SentinelDND', '/Crowdstrike_devices')]",
+      "properties": {
+        "category": "Parsers",
+        "displayName": "Crowdstrikecl_devices",
+        "functionAlias": "Crowdstrikecl_devices",
+        "query": "fdr_CrowdStrike_Secondary_Data_CL | extend AF = todynamic(AdditionalFields) | extend EventTime = todatetime(AF['_time'])"
+      }
+    }
+  ]
+}
